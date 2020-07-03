@@ -1,17 +1,72 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-title>
+            Compute Compound Interest
+        </ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Compound Interest</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-list>
+        <ion-item>
+            <ion-label>Principal: ₦</ion-label>
+            <ion-input [(ngModel)]="principal" name="principal" type="number"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Rate:</ion-label>
+            <ion-input [(ngModel)]="rate" name="rate" type="number"></ion-input>
+            <ion-note slot="end">%</ion-note>
+        </ion-item>
+        <ion-item>
+            <ion-label>Duration:</ion-label>
+            <ion-input [(ngModel)]="duration" name="duration" type="number"></ion-input>
+            <ion-note slot="end">{{freq === 'y' ? "Years" : "Months"}}</ion-note>
+        </ion-item>
+        <ion-item>
+            <ion-label>Compounding Frequency:</ion-label>
+            <ion-select [(ngModel)]="freq" name="freq" placeholder="Select One">
+                <ion-select-option value="y">Years</ion-select-option>
+                <ion-select-option value="m">Months</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <br>
+        <br>
+        <br>
+        <ion-button (click)="compute();" expand="block">{{cText}}</ion-button>
+        <br><br>
+        <div *ngIf="!err">
+            <h3 class="center">Interest: ₦{{final_interest}}</h3>
+            <h3 class="center">Total Amount: ₦{{final_total}}</h3>
+        </div>
+        <ion-item *ngIf="err">
+            <ion-label color="danger">Error: {{errText}}</ion-label>
+        </ion-item>
+        <br><br>
+        <ion-card *ngIf="resultSheet.length > 2">
+            <ion-card-header>
+                <ion-card-title class="center">Interest Breakdown</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-list>
+                    <div *ngFor="let res of resultSheet">
+                        <ion-list-header>
+                            <ion-label color="primary">{{res.dur}}</ion-label>
+                        </ion-list-header>
+                        <ion-item>
+                            <ion-label>{{res.int}}</ion-label>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label>{{res.amt}}</ion-label>
+                        </ion-item>
+                        <br>
+                    </div>
+                </ion-list>
+            </ion-card-content>
+        </ion-card>
+    </ion-list>
 </ion-content>
