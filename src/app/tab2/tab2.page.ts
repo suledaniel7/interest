@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Platform } from '@ionic/angular';
 
 @Component({
     selector: 'app-tab2',
@@ -20,7 +21,13 @@ export class Tab2Page {
     errText: string = '';
     err: boolean = false;
 
-    constructor() { }
+    constructor(
+        private platform: Platform
+    ) {
+        this.platform.backButton.subscribe(() => {
+            navigator['app'].exitApp();
+        });
+    }
 
     compute() {
         this.err = false;

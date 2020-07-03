@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Platform } from '@ionic/angular';
 
 @Component({
     selector: 'app-tab1',
@@ -20,7 +21,13 @@ export class Tab1Page {
     errText: string = '';
     err: boolean = false;
 
-    constructor() { }
+    constructor(
+        private platform: Platform
+    ) {
+        this.platform.backButton.subscribe(() => {
+            navigator['app'].exitApp();
+        });
+    }
 
     compute() {
         this.err = false;
@@ -53,8 +60,8 @@ export class Tab1Page {
                     interest += c_int;
                     this.resultSheet.push({
                         dur: `${this.freq_string} ${i}`,
-                        amt: `Amount Payable: ₦${this.format(final_val.toFixed(2))}.`,
-                        int: `Interest Accrued: ₦${this.format(interest.toFixed(2))}.`
+                        amt: `Payable: ₦${this.format(final_val.toFixed(2))}.`,
+                        int: `Interest: ₦${this.format(interest.toFixed(2))}.`
                     });
                 }
 

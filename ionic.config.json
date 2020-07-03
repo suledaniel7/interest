@@ -1,5 +1,7 @@
 {
   "name": "interest",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
