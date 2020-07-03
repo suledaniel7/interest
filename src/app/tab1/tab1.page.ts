@@ -60,8 +60,8 @@ export class Tab1Page {
                     interest += c_int;
                     this.resultSheet.push({
                         dur: `${this.freq_string} ${i}`,
-                        amt: `Payable: ₦${this.format(final_val.toFixed(2))}.`,
-                        int: `Interest: ₦${this.format(interest.toFixed(2))}.`
+                        amt: `Payable: ₦${this.format(final_val.toFixed(2))}`,
+                        int: `Interest: ₦${this.format(interest.toFixed(2))}`
                     });
                 }
 
