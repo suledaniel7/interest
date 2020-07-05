@@ -80,8 +80,8 @@ export class Tab1Page {
                     this.setError("Please set a value for Amount Paid");
                 }
             }
-            c_payment.p = this.format(c_payment.p);
-            c_payment.i = this.format(c_payment.i);
+            c_payment.p = this.format(c_payment.p.toFixed(2));
+            c_payment.i = this.format(c_payment.i.toFixed(2));
         }
         else {
             this.setError("Please set a principal and rate before adding any more repayments");
