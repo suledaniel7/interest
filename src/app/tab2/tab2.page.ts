@@ -52,8 +52,18 @@ export class Tab2Page {
                 this.cText = "Computing Interest...";
                 let rate = this.rate / 100;
                 let final_val = this.principal;
-                let interest = this.principal * rate * this.duration;
-                final_val += interest;
+                let interest = 0;
+
+                for (let i = 1; i <= this.duration; i++) {
+                    let c_int = Number((final_val * rate).toFixed(2));
+                    final_val += c_int;
+                    interest += c_int;
+                    this.resultSheet.push({
+                        dur: `${this.freq_string} ${i}`,
+                        amt: `Payable: ₦${this.format(final_val.toFixed(2))}`,
+                        int: `Interest: ₦${this.format(interest.toFixed(2))}`
+                    });
+                }
 
                 this.final_interest = this.format(interest.toFixed(2));
                 this.final_total = this.format(final_val.toFixed(2));

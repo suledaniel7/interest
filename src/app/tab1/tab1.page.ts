@@ -9,15 +9,15 @@ import { Platform } from '@ionic/angular';
 export class Tab1Page {
     principal: number;
     rate: number;
-    duration: number;
+    due: number;
+    due_fixed: boolean = true;
     freq: string = 'y';
     freq_string: string = "Year";
     resultSheet: Array<object> = [];
+    repayments: Array<any> = [];
 
-    final_interest: string = "0.00";
-    final_total: string = "0.00";
-
-    cText: string = "Compute Interest";
+    cText: string = "Compute Repayments";
+    dText: string = "Compute Amount Due";
     errText: string = '';
     err: boolean = false;
 
@@ -29,45 +29,128 @@ export class Tab1Page {
         });
     }
 
-    compute() {
-        this.err = false;
-        this.errText = '';
-        this.resultSheet = [];
-        this.freq_string = this.freq === 'y' ? "Year" : "Month";
+    changeFreq() {
+        if (this.freq === 'y') {
+            this.freq_string = "Year";
+        }
+        else {
+            this.freq_string = "Month";
+        }
+    }
 
-        if (this.principal && this.rate && this.duration) {
-            if (isNaN(this.principal)) {
-                this.setError("Value provided for Principal is not a valid number");
-            }
-            else if (isNaN(this.rate)) {
-                this.setError("Value provided for Rate is not a valid number");
-            }
-            else if (isNaN(this.duration)) {
-                this.setError("Value provided for Duration is not a valid number");
-            }
-            else if (this.principal !== Math.abs(this.principal) || this.rate !== Math.abs(this.rate) || this.duration !== Math.abs(this.duration)) {
-                this.setError("Negative values are not valid");
+    initRepay() {
+        this.errText = '';
+        this.err = false;
+        this.repayments = [];
+        if (this.principal && this.rate) {
+            let params = this.repayCompute(this.principal, this.rate, 0);
+            this.repayments.push({
+                p: this.format(params.p.toFixed(2)),
+                i: this.format(params.i.toFixed(2)),
+                d: 0
+            });
+        }
+        else {
+            this.setError("Please first set values for Principal and Rate");
+            this.due_fixed = false;
+        }
+
+    }
+
+    addRepay() {
+        this.errText = '';
+        this.err = false;
+        if (this.principal && this.rate && !this.due_fixed) {;
+            let c_payment = this.repayments[this.repayments.length - 1];
+            c_payment.p = this.strip(c_payment.p);
+            c_payment.i = this.strip(c_payment.i);
+            if (Number(c_payment.p) > 0 && Number(c_payment.d) > 0) {
+                let params = this.repayCompute(c_payment.p, this.rate, c_payment.d);
+                this.repayments.push({
+                    p: this.format(params.p.toFixed(2)),
+                    i: this.format(params.i.toFixed(2)),
+                    d: 0
+                });
             }
             else {
-                this.cText = "Computing Interest...";
-                let rate = this.rate / 100;
-                let final_val = this.principal;
-                let interest = 0;
-
-                for (let i = 1; i <= this.duration; i++) {
-                    let c_int = Number((final_val * rate).toFixed(2));
-                    final_val += c_int;
-                    interest += c_int;
-                    this.resultSheet.push({
-                        dur: `${this.freq_string} ${i}`,
-                        amt: `Payable: ₦${this.format(final_val.toFixed(2))}`,
-                        int: `Interest: ₦${this.format(interest.toFixed(2))}`
-                    });
+                if (c_payment.p <= 0) {
+                    this.setError("Repayment complete");
                 }
+                else {
+                    this.setError("Please set a value for Amount Paid");
+                }
+            }
+            c_payment.p = this.format(c_payment.p);
+            c_payment.i = this.format(c_payment.i);
+        }
+        else {
+            this.setError("Please set a principal and rate before adding any more repayments");
+        }
+    }
 
-                this.final_interest = this.format(interest.toFixed(2));
-                this.final_total = this.format(final_val.toFixed(2));
-                this.cText = "Compute Interest";
+    removeLast() {
+        if (this.repayments.length > 1) {
+            this.repayments.pop();
+        }
+    }
+
+    repayCompute(principal: number, rate: number, due: number) {//due is amount user paid for spec duration
+        rate = rate / 100;
+        let c_bill = principal;
+        let interest = 0;
+        let c_due = due;
+        interest = Number((c_bill * rate).toFixed(2));
+        c_bill += interest;
+        if (c_bill > c_due) {
+            c_bill -= c_due;
+        }
+        else {
+            c_due = c_bill;
+            c_bill = 0;
+        }
+        c_bill = Number(c_bill.toFixed(2));
+        return ({
+            p: c_bill,
+            i: interest
+        });
+    }
+
+    computeDues() {
+        this.err = false;
+        this.errText = '';
+        this.repayments = [];
+        let rate = this.rate;
+        let principal = this.principal;
+        let due = this.due;
+
+        rate = rate / 100;
+        let c_bill = principal;
+        let interest = 0;
+        let c_due = due;
+        while (c_bill > 0) {
+            interest = Number((c_bill * rate).toFixed(2));
+            c_bill += interest;
+            if (c_bill > c_due) {
+                c_bill -= c_due;
+            }
+            else {
+                c_due = c_bill;
+                c_bill = 0;
+            }
+            c_bill = Number(c_bill.toFixed(2));
+            if (this.repayments.length > 19 && interest >= c_due) {
+                this.setError("Out of range. Interest exceeds Amount Paid. This results in an infinite payment system.");
+                break;
+            }
+            else if (this.repayments.length > 99) {
+                this.setError("Out of range. Please input the last value for Principal and then recompute");
+            }
+            else {
+                this.repayments.push({
+                    p: this.format(c_bill.toFixed(2)),
+                    i: this.format(interest.toFixed(2)),
+                    d: this.format(c_due.toFixed(2))
+                });
             }
         }
     }
@@ -117,6 +200,10 @@ export class Tab1Page {
     mini_format(num_str: string) {
         let m_lt = num_str.length;
         return m_lt - 3;
+    }
+
+    strip(num_str: string){
+        return (Number(num_str.replace(/,/g, '')));
     }
 
     setError(txt: string) {

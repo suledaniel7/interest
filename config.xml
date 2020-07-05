@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.nucleustech.interest" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Interest Calculator</name>
+<widget id="com.nucleustech.interest" version="1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Loan Repayment Calculator</name>
     <description>An application for computing simple and compound interest.</description>
     <author email="suledaniel7@gmail.com" href="http://github.com/suledaniel7">Daniel Sule</author>
     <content src="index.html" />
